@@ -3,7 +3,7 @@ import ePub from "epubjs";
 import "./App.css";
 import "./examples.css";
 
-const bookUrl = "https://s3.amazonaws.com/moby-dick/moby-dick.epub";
+const bookUrl = "./src/Data/Sample.epub";
 
 function App() {
   const [book, setBook] = useState<any>(null);
@@ -105,34 +105,71 @@ function App() {
       }
     });
 
-
-    book.loaded.navigation.then(function(toc){
-
-
+    book.loaded.navigation.then(function (toc) {
       console.log(`reading toc`)
-			const $select = document.getElementById("toc"),
-					docfrag = document.createDocumentFragment();
+      const $select = document.getElementById("toc"),
+        docfrag = document.createDocumentFragment();
 
-			toc.forEach(function(chapter) {
+      toc.forEach(function (chapter) {
         console.log(`element: ${chapter}`);
-				const option = document.createElement("option");
-				option.textContent = chapter.label;
-				option.setAttribute("ref", chapter.href);
+        const option = document.createElement("option");
+        option.textContent = chapter.label;
+        option.setAttribute("ref", chapter.href);
 
-				docfrag.appendChild(option);
-			});
+        docfrag.appendChild(option);
+      });
 
-			$select.appendChild(docfrag);
+      $select.appendChild(docfrag);
 
-			$select.onchange = function(){
-					const index = $select.selectedIndex,
-							url = $select.options[index].getAttribute("ref");
-					rendition.display(url);
-					return false;
-			};
+      $select.onchange = function () {
+        const index = $select.selectedIndex,
+          url = $select.options[index].getAttribute("ref");
+        rendition.display(url);
+        return false;
+      };
 
-		});
+    });
 
+   rendition.on("selected", function (cfiRange, contents) {
+      rendition.annotations.highlight(cfiRange);
+      contents.window.getSelection().removeAllRanges();
+    });
+
+    var highlights = document.getElementById('highlights');
+
+    rendition.on("selected", function (cfiRange) {
+
+      book.getRange(cfiRange).then(function (range) {
+        var text;
+        var li = document.createElement('li');
+        var a = document.createElement('a');
+        var remove = document.createElement('a');
+        var textNode;
+
+        if (range) {
+          text = range.toString();
+          textNode = document.createTextNode(text);
+
+          a.textContent = cfiRange;
+          a.href = "#" + cfiRange;
+          a.onclick = function () {
+            rendition.display(cfiRange);
+          };
+
+          remove.textContent = "remove";
+          remove.href = "#" + cfiRange;
+          remove.onclick = function () {
+            rendition.annotations.remove(cfiRange, "highlight");
+            highlights?.removeChild(li)
+            return false;
+          };
+
+          li.appendChild(textNode);
+          li.appendChild(remove);
+          highlights.appendChild(li);
+        }
+      })
+    });
 
     return () => {
       rendition.destroy();
@@ -153,6 +190,9 @@ function App() {
       <a id="next" href="#next" className="arrow">
         ›
       </a>
+      <div id="extras">
+        <ul id="highlights"></ul>
+      </div>
     </>
   );
 }
