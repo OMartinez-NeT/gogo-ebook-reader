@@ -1,180 +1,111 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import ePub from "epubjs";
-import "./App.css";
+//import "./App.css";
 import "./examples.css";
-
-const bookUrl = "./src/Data/Sample.epub";
 
 function App() {
   const [book, setBook] = useState<any>(null);
+  const [rendition, setRendition] = useState<any>(null);
+  const [toc, setToc] = useState([]);
+  const [selectedSection, setSelectedSection] = useState('');
+  const [showPrev, setShowPrev] = useState(true);
+  const [showNext, setShowNext] = useState(true);
+  const [isHighlightEnabled, setHighlightEnabled] = useState(false);
+  const [isCommentEnabled, setCommentEnabled] = useState(false);
 
-  // Load the book only once
   useEffect(() => {
-    console.log(`loading book`);
-    const _book = ePub(bookUrl);
-    setBook(_book);
+    const bookUrl = ePub("./src/Data/example.epub");
+    setBook(bookUrl);
   }, []);
 
   useEffect(() => {
     if (!book) return;
 
-    const rendition = book.renderTo("viewer", {
+    const renderedBook = book.renderTo("viewer", {
       width: "100%",
-      height: 600,
+      height: 700,
       allowScriptedContent: true,
       spread: "always"
     });
 
-    rendition.display();
+    renderedBook.display();
+    setRendition(renderedBook);
 
     book.ready.then(() => {
-      console.log("book ready");
-      const next = document.getElementById("next");
-      const prev = document.getElementById("prev");
-
-      next.addEventListener(
-        "click",
-        (e) => {
-          book.package.metadata.direction === "rtl"
-            ? rendition.prev()
-            : rendition.next();
-          e.preventDefault();
-        },
-        false
-      );
-
-      prev.addEventListener(
-        "click",
-        (e) => {
-          book.package.metadata.direction === "rtl"
-            ? rendition.next()
-            : rendition.prev();
-          e.preventDefault();
-        },
-        false
-      );
-
-      const keyListener = (e) => {
-        if ((e.keyCode || e.which) === 37) {
-          book.package.metadata.direction === "rtl"
-            ? rendition.next()
-            : rendition.prev();
+      renderedBook.on("relocated", (location) => {
+        if (location.atEnd) {
+          setShowNext(false);
+        } else {
+          setShowNext(true);
         }
-        if ((e.keyCode || e.which) === 39) {
-          book.package.metadata.direction === "rtl"
-            ? rendition.prev()
-            : rendition.next();
+
+        if (location.atStart) {
+          setShowPrev(false);
+        } else {
+          setShowPrev(true);
         }
-      };
-
-      rendition.on("keyup", keyListener);
-      document.addEventListener("keyup", keyListener, false);
-
-      // Cleanup event listeners
-      return () => {
-        document.removeEventListener("keyup", keyListener);
-      };
-    });
-
-    rendition.on("rendered", (section) => {
-      console.log(`Section rendered: ${section}`);
-    });
-
-    rendition.on("relocated", (location) => {
-      console.log(location);
-
-      const next =
-        book.package.metadata.direction === "rtl"
-          ? document.getElementById("prev")
-          : document.getElementById("next");
-      const prev =
-        book.package.metadata.direction === "rtl"
-          ? document.getElementById("next")
-          : document.getElementById("prev");
-
-      if (location.atEnd) {
-        next.style.visibility = "hidden";
-      } else {
-        next.style.visibility = "visible";
-      }
-
-      if (location.atStart) {
-        prev.style.visibility = "hidden";
-      } else {
-        prev.style.visibility = "visible";
-      }
-    });
-
-    book.loaded.navigation.then(function (toc) {
-      console.log(`reading toc`)
-      const $select = document.getElementById("toc"),
-        docfrag = document.createDocumentFragment();
-
-      toc.forEach(function (chapter) {
-        console.log(`element: ${chapter}`);
-        const option = document.createElement("option");
-        option.textContent = chapter.label;
-        option.setAttribute("ref", chapter.href);
-
-        docfrag.appendChild(option);
       });
 
-      $select.appendChild(docfrag);
-
-      $select.onchange = function () {
-        const index = $select.selectedIndex,
-          url = $select.options[index].getAttribute("ref");
-        rendition.display(url);
-        return false;
-      };
-
-    });
-
-   rendition.on("selected", function (cfiRange, contents) {
-      rendition.annotations.highlight(cfiRange);
-      contents.window.getSelection().removeAllRanges();
-    });
-
-    var highlights = document.getElementById('highlights');
-
-    rendition.on("selected", function (cfiRange) {
-
-      book.getRange(cfiRange).then(function (range) {
-        var text;
-        var li = document.createElement('li');
-        var a = document.createElement('a');
-        var remove = document.createElement('a');
-        var textNode;
-
-        if (range) {
-          text = range.toString();
-          textNode = document.createTextNode(text);
-
-          a.textContent = cfiRange;
-          a.href = "#" + cfiRange;
-          a.onclick = function () {
-            rendition.display(cfiRange);
+      book.loaded.navigation.then((nav) => {
+        const items = nav.toc.map((item) => {
+          return {
+            label: item.label,
+            href: item.href
           };
+        });
 
-          remove.textContent = "remove";
-          remove.href = "#" + cfiRange;
-          remove.onclick = function () {
-            rendition.annotations.remove(cfiRange, "highlight");
-            highlights?.removeChild(li)
-            return false;
-          };
-
-          li.appendChild(textNode);
-          li.appendChild(remove);
-          highlights.appendChild(li);
-        }
-      })
-    });
+        setToc(items);
+      });
+    })
 
     return () => {
-      rendition.destroy();
+      renderedBook.destroy();
     };
-  }, [book]);
+  }, [book])
+
+  const handleSectionChange = (e) => {
+    const url = e.target.value;
+    rendition.display(url);
+    setSelectedSection(url);
+  };
+
+  const handlePrev = () => {
+    rendition.prev();
+  }
+
+  const handleNext = () => {
+    rendition.next();
+  }
+
+  const handleHighlightingText = useCallback((cfiRange, contents) => {
+    rendition.annotations.highlight(cfiRange);
+    contents.window.getSelection().removeAllRanges();
+  }, [rendition]);
+
+  const handleHighlight = () => {
+    if (isHighlightEnabled) {
+      rendition.off('selected', handleHighlightingText);
+      setHighlightEnabled(false);
+    } else {
+      rendition.on('selected', handleHighlightingText);
+      setHighlightEnabled(true);
+    }
+  };
+
+  const handleCommentingText = useCallback((cfiRange, contents) => {
+    const selectedText = contents.window.getSelection().toString();
+    console.log(cfiRange, selectedText);
+  }, [rendition]);
+
+  const handleComment = () => {
+    if (isCommentEnabled) {
+      rendition.off('selected', handleCommentingText);
+      setCommentEnabled(false);
+    } else {
+      rendition.on('selected', handleCommentingText);
+      setCommentEnabled(true);
+    }
+  }
 
   if (!book) {
     return <div>Loading...</div>;
@@ -182,19 +113,38 @@ function App() {
 
   return (
     <>
-      <select id="toc"></select>
-      <div id="viewer" className="spreads"></div>
-      <a id="prev" href="#prev" className="arrow">
-        ‹
-      </a>
-      <a id="next" href="#next" className="arrow">
-        ›
-      </a>
-      <div id="extras">
-        <ul id="highlights"></ul>
+      <div className='right-column'>
+        <select className='toc' value={selectedSection} onChange={handleSectionChange}>
+          {toc.map((section, index) => (
+            <option key={index} value={section.href}>
+              {section.label}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div className='left-column'>
+        <div className='top-menu'>
+          <button
+            className={isHighlightEnabled ? 'btn on' : 'btn off'}
+            onClick={handleHighlight}
+          >
+            {isHighlightEnabled ? 'Highlights: On' : 'Highlights: Off'}
+          </button>
+          <button
+            className={isCommentEnabled ? 'btn on' : 'btn off'}
+            onClick={handleComment}
+          >
+            {isCommentEnabled ? 'Comment: On' : 'Comment: Off'}
+          </button>
+        </div>
+        <div className='content'>
+          {showPrev && (<a className="arrow" onClick={handlePrev}>‹</a>)}
+          <div id='viewer'></div>
+          {showNext && (<a className="arrow" onClick={handleNext}>›</a>)}
+        </div>
       </div>
     </>
-  );
+  )
 }
 
 export default App;

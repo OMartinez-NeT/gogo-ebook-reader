@@ -5,30 +5,36 @@ body {
   color: #333;
 }
 
-#toc {
-  display: block;
-  margin: 10px auto;
+.content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 #viewer {
   overflow: hidden;
   width: 620px;
   margin: 0 50px;
-  /*background: url('ajax-loader.gif') center center no-repeat;*/
   background-color: white;
   box-shadow: 0 0 4px #ccc;
   margin: 20px;
   padding: 40px 80px;
 }
 
-@media (min-width: 1000px) {
-  #prev {
-    left: 40px;
-  }
+.top-menu {
+  background-color: white;
+  width: 800px;
+  height: 40px;
+  margin: auto;
+  border: 1px solid black;
+  text-align: center;
+}
 
-  #next {
-    right: 40px;
-  }
+.toc {
+  display: block;
+  margin: 20px auto;
+  width: 80%;
+  height: 40px;
 }
 
 .arrow {
@@ -48,16 +54,7 @@ body {
   color: #000;
 }
 
-#prev {
-  float: left;
-}
-
-#next {
-  float: right;
-}
-
 #extras {
-  width: 600px;
   margin: 40px auto;
 }
 
@@ -76,4 +73,37 @@ body {
 
 #highlights a {
   display: block;
+}
+
+.right-column {
+  float: right;
+  width: 30%;
+  border: 1px black solid;
+  box-sizing: border-box;
+  padding: 10px;
+}
+
+.left-column {
+  float: right;
+  width: 65%;
+  border: 1px black solid;
+  box-sizing: border-box;
+  padding: 10px;
+}
+
+.btn {
+  cursor: pointer;
+  border-radius: 5px;
+  text-decoration: none;
+  padding: 10px 20px;
+}
+
+.on {
+  background-color: #4CAF50;
+  color: #fff;
+}
+
+.off {
+  background-color: #ccc;
+  color: #333;
 }
