@@ -14,10 +14,16 @@ function App() {
   const [isHighlightEnabled, setHighlightEnabled] = useState(false);
   const [highlights, setHighlights] = useState([]);
   const [isCommentEnabled, setCommentEnabled] = useState(false);
+  const [comments, setComments] = useState([]);
   const [highlightPageNum, setHighlightPageNum] = useState(0);
+  const [commentPageNum, setCommentPageNum] = useState(0);
+  const [isPromptOpen, setIsPromptOpen] = useState(false);
 
-  const hihglightPerPage = 5;
-  const pagesVisited = highlightPageNum * hihglightPerPage;
+  const highlightPerPage = 5;
+  const highlightPagesVisited = highlightPageNum * highlightPerPage;
+
+  const commentPerPage = 5;
+  const commentPagesVisited = commentPageNum * commentPerPage;
 
   useEffect(() => {
     const bookUrl = ePub("./src/Data/example.epub");
@@ -129,22 +135,18 @@ function App() {
     setHighlights((prevData) => prevData.filter((data) => data.range !== cfiRange));
   };
 
-  const handleDisplayHighlight = (cfiRange) => {
-    rendition.display(cfiRange);
-  };
-
-  const displayHighlight = highlights.slice(pagesVisited, pagesVisited + hihglightPerPage)
+  const displayHighlight = highlights.slice(highlightPagesVisited, highlightPagesVisited + highlightPerPage)
     .map((data, index) => (
       <li className='highlight-display' key={index}>
         <span>{data.text}</span>
         <br />
         <br />
-        <button className='btn' onClick={() => handleDisplayHighlight(data.range)}>Go to Page</button>
+        <button className='btn' onClick={() => rendition.display(data.range)}>Go to Page</button>
         <button className='btn' onClick={() => handleRemoveHighlight(data.range)}>Delete</button>
       </li>
     ))
 
-  const highlightPageCount = Math.ceil(highlights.length / hihglightPerPage);
+  const highlightPageCount = Math.ceil(highlights.length / highlightPerPage);
 
   const handleHighlightChangePage = ({ selected }) => {
     setHighlightPageNum(selected);
@@ -152,20 +154,57 @@ function App() {
 
   //------------------ Comments
 
-  const handleCommentingText = useCallback((cfiRange, contents) => {
-    const selectedText = contents.window.getSelection().toString();
-    console.log(cfiRange, selectedText);
-  }, [rendition]);
-
   const handleComment = () => {
     if (isCommentEnabled) {
-      rendition.off('selected', handleCommentingText);
+      rendition.off('selected', handleCommentData);
       setCommentEnabled(false);
     } else {
-      rendition.on('selected', handleCommentingText);
+      rendition.on('selected', handleCommentData);
       setCommentEnabled(true);
     }
   }
+
+  const handleCommentData = useCallback(async (cfiRange) => {
+    const comment = prompt('what would you like to comment');
+    const range = await book.getRange(cfiRange);
+
+    if (range) {
+      const text = range.toString();
+
+      const data = {
+        range: cfiRange,
+        text: text,
+        comment: comment
+      }
+
+      setComments((prevData) => [...prevData, data]);
+    }
+
+  }, [book])
+
+  const handleRemoveComment = (cfiRange) => {
+    setComments((prevData) => prevData.filter((data) => data.range !== cfiRange));
+  }
+
+  const displayComment = comments.slice(commentPagesVisited, commentPagesVisited + commentPerPage)
+    .map((data, index) => (
+      <li className='highlight-display' key={index}>
+        <span>{data.text}</span>
+        <br />
+        <br />
+        <span>{data.comment}</span>
+        <br />
+        <br />
+        <button className='btn' onClick={() => rendition.display(data.range)}>Go to Page</button>
+        <button className='btn' onClick={() => handleRemoveComment(data.range)}>Delete</button>
+      </li>
+    ))
+
+  const commentPageCount = Math.ceil(comments.length / commentPerPage);
+
+  const handleCommentChangePage = ({ selected }) => {
+    setCommentPageNum(selected);
+  };
 
   if (!book) {
     return <div>Loading...</div>;
@@ -183,6 +222,18 @@ function App() {
             nextLabel={"Next"}
             pageCount={highlightPageCount}
             onPageChange={handleHighlightChangePage}
+            containerClassName={"paginationBttns"}
+            previousLinkClassName={"previousBttn"}
+            nextLinkClassName={"nextBttn"}
+            disabledClassName={"paginationDisabled"}
+            activeClassName={"paginationActive"}
+          />
+          {displayComment}
+          <ReactPaginate
+            previousLabel={"Previous"}
+            nextLabel={"Next"}
+            pageCount={commentPageCount}
+            onPageChange={handleCommentChangePage}
             containerClassName={"paginationBttns"}
             previousLinkClassName={"previousBttn"}
             nextLinkClassName={"nextBttn"}
