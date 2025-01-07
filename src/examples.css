@@ -107,3 +107,50 @@ body {
   background-color: #ccc;
   color: #333;
 }
+
+.paginationBttns {
+  width: 95%;
+  height: 40px;
+  list-style: none;
+  display: flex;
+  justify-content: center;
+}
+
+.paginationBttns a {
+  padding: 10px;
+  margin: 1px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  color: black;
+  background-color: white;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.paginationActive a {
+  background-color: grey;
+  color: white;
+}
+
+.paginationBttns a:hover {
+  background-color: grey;
+  color: white;
+}
+
+.paginationDisabled a {
+  color: grey;
+  background-color: white;
+}
+
+.highlight-display {
+  background-color: white;
+  border: 1px solid #ddd;
+  display: block;
+  flex-direction: column;
+  border-radius: 4px;
+  margin: 50px 10px 0px;
+  margin-top: 5px;
+  padding: 50px 30px;
+  width: 470px;
+  box-sizing: border-box;
+}
