@@ -19,7 +19,7 @@ function App() {
   const [comments, setComments] = useState([]);
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [showCommentPrompt, setShowCommentPrompt] = useState(false);
-  const [commentInput, setCommentInput] = useState(null);
+  const [commentInput, setCommentInput] = useState('');
 
   const [highlightAllPageNum, setHighlightAllPageNum] = useState(0);
   const [commentAllPageNum, setCommentAllPageNum] = useState(0);
@@ -142,7 +142,6 @@ function App() {
     });
 
     const range = await book.getRange(cfiRange);
-    const page = rendition.location.start.displayed.page;
 
     if (range) {
       const text = range.toString();
@@ -150,7 +149,7 @@ function App() {
       const data = {
         range: cfiRange,
         text: text,
-        page: page
+        page: currentPage
       }
 
       setHighlights((prevData) => [...prevData, data]);
@@ -167,7 +166,9 @@ function App() {
 
   const displayAllHighlight = highlights.slice(highlightAllPagesVisited, highlightAllPagesVisited + highlightAllPerPage)
     .map((data, index) => (
-      <DisplayHighlights data={data} index={index} rendition={rendition} handleRemoveHighlight={handleRemoveHighlight} />
+      <li className='card-display' key={index}>
+        <DisplayHighlights data={data} rendition={rendition} handleRemoveHighlight={handleRemoveHighlight} />
+      </li>
     ))
 
   const highlightAllPageCount = Math.ceil(highlights.length / highlightAllPerPage);
@@ -178,7 +179,9 @@ function App() {
 
   const displayCurrPgHighlight = highlights.filter((data) => data.page == currentPage).slice(highlightCurrPagesVisited, highlightCurrPagesVisited + highlightCurrPerPage)
     .map((data, index) => (
-      <DisplayHighlights data={data} index={index} rendition={rendition} handleRemoveHighlight={handleRemoveHighlight} />
+      <li className='card-display' key={index}>
+        <DisplayHighlights data={data} rendition={rendition} handleRemoveHighlight={handleRemoveHighlight} />
+      </li>
     ))
 
   const highlightCurrPageCount = Math.ceil(highlights.filter((data) => data.page == currentPage).length / highlightCurrPerPage);
@@ -199,39 +202,40 @@ function App() {
 
   //------------------ Comments
 
+  const [rang, setRange] = useState('');
+  const [text, setText] = useState('');
+
   const handleComment = () => {
     rendition.on('selected', handleCommentData);
   }
 
-  const handleCommentPromptSubmit = () => {
+  const handleCommentPromptSubmit = (e) => {
+    e.preventDefault();
     setShowCommentPrompt(false);
+
+    const data = {
+      range: rang,
+      text: text,
+      comment: commentInput,
+      page: currentPage,
+    }
+
+    setComments((prevData) => [...prevData, data]);
   }
 
   const handleCommentPromptCancel = () => {
     setShowCommentPrompt(false);
+    rendition.off('selected', handleCommentData);
   }
 
   const handleCommentData = useCallback(async (cfiRange) => {
-    const comment = prompt('what would you like to comment');
-    
-    if (comment) {
-      const range = await book.getRange(cfiRange);
-      //setShowCommentPrompt(true);
+    setShowCommentPrompt(true);
+    const range = await book.getRange(cfiRange);
 
-      if (range) {
-        const text = range.toString();
-        const page = rendition.location.start.displayed.page;
-
-        const data = {
-          range: cfiRange,
-          text: text,
-          comment: comment,
-          page: page
-        }
-
-        setComments((prevData) => [...prevData, data]);
-      }
-
+    if (range) {
+      const text = range.toString();
+      setText(text);
+      setRange(cfiRange);
       rendition.off('selected', handleCommentData);
     }
   }, [rendition, book])
@@ -250,7 +254,9 @@ function App() {
 
   const displayAllComment = comments.slice(commentAllPagesVisited, commentAllPagesVisited + commentAllPerPage)
     .map((data, index) => (
-      <DisplayComments data={data} index={index} rendition={rendition} handleRemoveComment={handleRemoveComment} />
+      <li className='card-display' key={index}>
+        <DisplayComments data={data} rendition={rendition} handleRemoveComment={handleRemoveComment} />
+      </li>
     ))
 
   const commentAllPageCount = Math.ceil(comments.length / commentAllPerPage);
@@ -261,7 +267,9 @@ function App() {
 
   const displayCurrComment = comments.filter((data) => data.page == currentPage).slice(commentCurrPagesVisited, commentCurrPagesVisited + commentCurrPerPage)
     .map((data, index) => (
-      <DisplayComments data={data} index={index} rendition={rendition} handleRemoveComment={handleRemoveComment} />
+      <li className='card-display' key={index}>
+        <DisplayComments data={data} rendition={rendition} handleRemoveComment={handleRemoveComment} />
+      </li>
     ))
 
   const commentCurrPageCount = Math.ceil(comments.filter((data) => data.page == currentPage).length / commentCurrPerPage);
@@ -382,7 +390,19 @@ function App() {
           <div>
             {showCommentPrompt && (
               <div>
-                Comment Prompt here
+                <form onSubmit={handleCommentPromptSubmit}>
+                  <div>
+                    <input
+                      type="text"
+                      id="commentInput"
+                      value={commentInput}
+                      onChange={(e) => setCommentInput(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <button type="submit">Submit</button>
+                  <button onClick={handleCommentPromptCancel}>Cancel</button>
+                </form>
               </div>
             )}
           </div>

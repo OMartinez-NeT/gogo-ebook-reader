@@ -1,12 +1,22 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import "../examples.css";
 
-const DisplayHighlights = ({ data, index, rendition, handleRemoveComment }) => {
+const DisplayComments = ({ data, rendition, handleRemoveComment }) => {
     const [menuOpen, setMenuOpen] = useState(false);
+
+    const handleViewPage = () => {
+        rendition.display(data.range);
+        setMenuOpen(false);
+    }
+
+    const handleDelete = () => {
+        handleRemoveComment(data.range);
+        setMenuOpen(false);
+    }
 
     return (
         <>
-            <li className='card-display' key={index}>
+            
                 <div>{data.text}</div>
                 <div>{data.comment}</div>
                 <div className="menu-container">
@@ -16,20 +26,19 @@ const DisplayHighlights = ({ data, index, rendition, handleRemoveComment }) => {
                         <span></span>
                     </div>
                     <ul className={menuOpen ? "open" : ""}>
-                        <li onClick={() => rendition.display(data.range)}>
+                        <li onClick={handleViewPage}>
                             View Page {data.page}
                         </li>
                         <li>
                             Edit
                         </li>
-                        <li onClick={() => handleRemoveComment(data.range)}>
+                        <li onClick={handleDelete}>
                             Delete
                         </li>
                     </ul>
                 </div>
-            </li>
         </>
     )
 };
 
-export default DisplayHighlights;
+export default DisplayComments;
