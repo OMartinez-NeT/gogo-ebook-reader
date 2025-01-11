@@ -1,7 +1,7 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
+import { TwitterPicker } from 'react-color';
 import ReactPaginate from 'react-paginate';
 import ePub from "epubjs";
-//import "./App.css";
 import "./examples.css";
 
 function App() {
@@ -11,19 +11,35 @@ function App() {
   const [selectedSection, setSelectedSection] = useState('');
   const [showPrev, setShowPrev] = useState(true);
   const [showNext, setShowNext] = useState(true);
-  const [isHighlightEnabled, setHighlightEnabled] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+
   const [highlights, setHighlights] = useState([]);
-  const [isCommentEnabled, setCommentEnabled] = useState(false);
   const [comments, setComments] = useState([]);
-  const [highlightPageNum, setHighlightPageNum] = useState(0);
-  const [commentPageNum, setCommentPageNum] = useState(0);
-  const [isPromptOpen, setIsPromptOpen] = useState(false);
+  const [showColorPicker, setShowColorPicker] = useState(false);
+  const [showCommentPrompt, setShowCommentPrompt] = useState(false);
 
-  const highlightPerPage = 5;
-  const highlightPagesVisited = highlightPageNum * highlightPerPage;
+  const [highlightAllPageNum, setHighlightAllPageNum] = useState(0);
+  const [commentAllPageNum, setCommentAllPageNum] = useState(0);
+  const [highlightCurrPageNum, setHighlightCurrPageNum] = useState(0);
+  const [commentCurrPageNum, setCommentCurrPageNum] = useState(0);
+  const [showAllHighlight, setShowAllHighlight] = useState(false);
+  const [showAllComment, setShowAllComment] = useState(true);
+  const [showCurrHighlight, setShowCurrHighlight] = useState(false);
+  const [showCurrComment, setShowCurrComment] = useState(false);
 
-  const commentPerPage = 5;
-  const commentPagesVisited = commentPageNum * commentPerPage;
+  const highlightColor = useRef('yellow');
+
+  const highlightAllPerPage = 4;
+  const highlightAllPagesVisited = highlightAllPageNum * highlightAllPerPage;
+
+  const highlightCurrPerPage = 4;
+  const highlightCurrPagesVisited = highlightCurrPageNum * highlightCurrPerPage;
+
+  const commentAllPerPage = 4;
+  const commentAllPagesVisited = commentAllPageNum * commentAllPerPage;
+
+  const commentCurrPerPage = 4;
+  const commentCurrPagesVisited = commentCurrPageNum * commentCurrPerPage;
 
   useEffect(() => {
     const bookUrl = ePub("./src/Data/example.epub");
@@ -79,15 +95,29 @@ function App() {
   const handleSectionChange = (e) => {
     const url = e.target.value;
     rendition.display(url);
+
     setSelectedSection(url);
+    setHighlightCurrPageNum(0);
+    setCommentCurrPageNum(0);
+
+    setTimeout(() => {
+      const page = rendition.location.start.displayed.page;
+      setCurrentPage(page);
+    }, 100);
   };
 
   const handlePrev = () => {
     rendition.prev();
+    setCurrentPage(currentPage - 1);
+    setHighlightCurrPageNum(0);
+    setCommentCurrPageNum(0);
   }
 
   const handleNext = () => {
     rendition.next();
+    setCurrentPage(currentPage + 1);
+    setHighlightCurrPageNum(0);
+    setCommentCurrPageNum(0);
   }
 
   const displayTOC = toc.map((section, index) => (
@@ -98,75 +128,18 @@ function App() {
 
   //---------------- Highlights
   const handleHighlight = () => {
-    if (isHighlightEnabled) {
-      rendition.off('selected', handleHighlightingText);
-      rendition.off('selected', handleHighlightData);
-      setHighlightEnabled(false);
-    } else {
-      rendition.on('selected', handleHighlightingText);
-      rendition.on('selected', handleHighlightData);
-      setHighlightEnabled(true);
-    }
+    rendition.on('selected', handleHighlightData);
   };
 
-  const handleHighlightingText = useCallback((cfiRange, contents) => {
-    rendition.annotations.highlight(cfiRange);
-    contents.window.getSelection().removeAllRanges();
-  }, [rendition]);
+  const handleHighlightData = useCallback(async (cfiRange, contents) => {
+    rendition.annotations.add("highlight", cfiRange, {}, {}, "hl", {
+      "fill": highlightColor.current,
+      "fill-opacity": "0.3",
+      "mix-blend-mode": "multiply"
+    });
 
-  const handleHighlightData = useCallback(async (cfiRange) => {
     const range = await book.getRange(cfiRange);
-
-    if (range) {
-      const text = range.toString();
-
-      const data = {
-        range: cfiRange,
-        text: text
-      }
-
-      setHighlights((prevData) => [...prevData, data]);
-    }
-
-  }, [book])
-
-  const handleRemoveHighlight = (cfiRange) => {
-    rendition.annotations.remove(cfiRange, 'highlight');
-    setHighlights((prevData) => prevData.filter((data) => data.range !== cfiRange));
-  };
-
-  const displayHighlight = highlights.slice(highlightPagesVisited, highlightPagesVisited + highlightPerPage)
-    .map((data, index) => (
-      <li className='highlight-display' key={index}>
-        <span>{data.text}</span>
-        <br />
-        <br />
-        <button className='btn' onClick={() => rendition.display(data.range)}>Go to Page</button>
-        <button className='btn' onClick={() => handleRemoveHighlight(data.range)}>Delete</button>
-      </li>
-    ))
-
-  const highlightPageCount = Math.ceil(highlights.length / highlightPerPage);
-
-  const handleHighlightChangePage = ({ selected }) => {
-    setHighlightPageNum(selected);
-  };
-
-  //------------------ Comments
-
-  const handleComment = () => {
-    if (isCommentEnabled) {
-      rendition.off('selected', handleCommentData);
-      setCommentEnabled(false);
-    } else {
-      rendition.on('selected', handleCommentData);
-      setCommentEnabled(true);
-    }
-  }
-
-  const handleCommentData = useCallback(async (cfiRange) => {
-    const comment = prompt('what would you like to comment');
-    const range = await book.getRange(cfiRange);
+    const page = rendition.location.start.displayed.page;
 
     if (range) {
       const text = range.toString();
@@ -174,90 +147,276 @@ function App() {
       const data = {
         range: cfiRange,
         text: text,
-        comment: comment
+        page: page
       }
 
-      setComments((prevData) => [...prevData, data]);
+      setHighlights((prevData) => [...prevData, data]);
     }
 
-  }, [book])
+    contents.window.getSelection().removeAllRanges();
+    rendition.off('selected', handleHighlightData);
+  }, [rendition, book]);
 
-  const handleRemoveComment = (cfiRange) => {
-    setComments((prevData) => prevData.filter((data) => data.range !== cfiRange));
-  }
+  const handleRemoveHighlight = (cfiRange) => {
+    rendition.annotations.remove(cfiRange, 'highlight');
+    setHighlights((prevData) => prevData.filter((data) => data.range !== cfiRange));
+  };
 
-  const displayComment = comments.slice(commentPagesVisited, commentPagesVisited + commentPerPage)
+  const displayAllHighlight = highlights.slice(highlightAllPagesVisited, highlightAllPagesVisited + highlightAllPerPage)
     .map((data, index) => (
       <li className='highlight-display' key={index}>
         <span>{data.text}</span>
         <br />
         <br />
-        <span>{data.comment}</span>
-        <br />
-        <br />
-        <button className='btn' onClick={() => rendition.display(data.range)}>Go to Page</button>
-        <button className='btn' onClick={() => handleRemoveComment(data.range)}>Delete</button>
+        <button className='btn' onClick={() => rendition.display(data.range)}>Go to Page {data.page}</button>
+        <button className='btn' onClick={() => handleRemoveHighlight(data.range)}>Delete</button>
       </li>
     ))
 
-  const commentPageCount = Math.ceil(comments.length / commentPerPage);
+  const highlightAllPageCount = Math.ceil(highlights.length / highlightAllPerPage);
 
-  const handleCommentChangePage = ({ selected }) => {
-    setCommentPageNum(selected);
+  const handleHighlightAllChangePage = ({ selected }) => {
+    setHighlightAllPageNum(selected);
   };
+
+  const displayCurrPgHighlight = highlights.filter((data) => data.page == currentPage).slice(highlightCurrPagesVisited, highlightCurrPagesVisited + highlightCurrPerPage)
+    .map((data, index) => (
+      <li className='highlight-display' key={index}>
+        <span>{data.text}</span>
+        <br />
+        <br />
+        <button className='btn' onClick={() => rendition.display(data.range)}>Go to Page {data.page}</button>
+        <button className='btn' onClick={() => handleRemoveHighlight(data.range)}>Delete</button>
+      </li>
+    ))
+
+  const highlightCurrPageCount = Math.ceil(highlights.filter((data) => data.page == currentPage).length / highlightCurrPerPage);
+
+  const handleHighlightCurrChangePage = ({ selected }) => {
+    setHighlightCurrPageNum(selected);
+  };
+
+  const handleHighlightColorChange = (color) => {
+    highlightColor.current = color.hex;
+    handleHighlight();
+    setShowColorPicker(false);
+  }
+
+  const handleShowColorPicker = () => {
+    setShowColorPicker(!showColorPicker);
+  }
+
+  //------------------ Comments
+
+  const handleComment = () => {
+    rendition.on('selected', handleCommentData);
+  }
+
+  const handleCommentData = useCallback(async (cfiRange) => {
+    const comment = prompt('what would you like to comment');
+    const range = await book.getRange(cfiRange);
+    setShowCommentPrompt(true);
+
+    if (range) {
+      const text = range.toString();
+      const page = rendition.location.start.displayed.page;
+
+      const data = {
+        range: cfiRange,
+        text: text,
+        comment: comment,
+        page: page
+      }
+
+      setComments((prevData) => [...prevData, data]);
+    }
+
+    rendition.off('selected', handleCommentData);
+  }, [rendition, book])
+
+  const handleRemoveComment = (cfiRange) => {
+    setComments((prevData) => prevData.filter((data) => data.range !== cfiRange));
+  }
+
+  const displayAllComment = comments.slice(commentAllPagesVisited, commentAllPagesVisited + commentAllPerPage)
+    .map((data, index) => (
+      <li className='highlight-display' key={index}>
+        <div className="passage-container">
+          <span className="passage">{data.text}</span>
+        </div>
+        <br />
+        <br />
+        <div className="comment-container">
+          <span>{data.comment}</span>
+          <br />
+          <br />
+          <button className='btn' onClick={() => rendition.display(data.range)}>Go to Page {data.page}</button>
+          <button className='btn' onClick={() => handleRemoveComment(data.range)}>Delete</button>
+        </div>
+      </li>
+    ))
+
+  const commentAllPageCount = Math.ceil(comments.length / commentAllPerPage);
+
+  const handleCommentAllChangePage = ({ selected }) => {
+    setCommentAllPageNum(selected);
+  };
+
+  const displayCurrComment = comments.filter((data) => data.page == currentPage).slice(commentCurrPagesVisited, commentCurrPagesVisited + commentCurrPerPage)
+    .map((data, index) => (
+      <li className='highlight-display' key={index}>
+        <div className="passage-container">
+          <span className="passage">{data.text}</span>
+        </div>
+        <br />
+        <br />
+        <div className="comment-container">
+          <span>{data.comment}</span>
+          <br />
+          <br />
+          <button className='btn' onClick={() => rendition.display(data.range)}>Go to Page {data.page}</button>
+          <button className='btn' onClick={() => handleRemoveComment(data.range)}>Delete</button>
+        </div>
+      </li>
+    ))
+
+  const commentCurrPageCount = Math.ceil(comments.filter((data) => data.page == currentPage).length / commentCurrPerPage);
+
+  const handleCommentCurrChangePage = ({ selected }) => {
+    setCommentCurrPageNum(selected);
+  };
+
+  const handleAnnotations = (allComments, currComments, allHighlights, currHighlights) => {
+    setShowAllComment(allComments);
+    setShowAllHighlight(allHighlights);
+    setShowCurrHighlight(currHighlights);
+    setShowCurrComment(currComments);
+  }
 
   if (!book) {
     return <div>Loading...</div>;
   }
 
   return (
-    <>
+    <div className="background">
       <div className='right-column'>
         <select className='toc' value={selectedSection} onChange={handleSectionChange}>
           {displayTOC}
         </select>
-          {displayHighlight}
-          <ReactPaginate
-            previousLabel={"Previous"}
-            nextLabel={"Next"}
-            pageCount={highlightPageCount}
-            onPageChange={handleHighlightChangePage}
-            containerClassName={"paginationBttns"}
-            previousLinkClassName={"previousBttn"}
-            nextLinkClassName={"nextBttn"}
-            disabledClassName={"paginationDisabled"}
-            activeClassName={"paginationActive"}
-          />
-          {displayComment}
-          <ReactPaginate
-            previousLabel={"Previous"}
-            nextLabel={"Next"}
-            pageCount={commentPageCount}
-            onPageChange={handleCommentChangePage}
-            containerClassName={"paginationBttns"}
-            previousLinkClassName={"previousBttn"}
-            nextLinkClassName={"nextBttn"}
-            disabledClassName={"paginationDisabled"}
-            activeClassName={"paginationActive"}
-          />
+        <div className='right-column-menu-container'>
+          <button
+            className={showAllComment ? 'right-column-menu-btn active' : 'right-column-menu-btn'}
+            onClick={() => handleAnnotations(true, false, false, false)}>
+            All Comments
+          </button>
+          <button
+            className={showCurrComment ? 'right-column-menu-btn active' : 'right-column-menu-btn'}
+            onClick={() => handleAnnotations(false, true, false, false)}>
+            Current Comments
+          </button>
+          <button
+            className={showAllHighlight ? 'right-column-menu-btn active' : 'right-column-menu-btn'}
+            onClick={() => handleAnnotations(false, false, true, false)}>
+            All Highlights
+          </button>
+          <button
+            className={showCurrHighlight ? 'right-column-menu-btn active' : 'right-column-menu-btn'}
+            onClick={() => handleAnnotations(false, false, false, true)}>
+            Current Highlights
+          </button>
+        </div>
+        {showAllHighlight && (
+          <div>
+            {displayAllHighlight}
+            <ReactPaginate
+              previousLabel={"Previous"}
+              nextLabel={"Next"}
+              pageCount={highlightAllPageCount}
+              onPageChange={handleHighlightAllChangePage}
+              containerClassName={"paginationBttns"}
+              previousLinkClassName={"previousBttn"}
+              nextLinkClassName={"nextBttn"}
+              disabledClassName={"paginationDisabled"}
+              activeClassName={"paginationActive"}
+            />
+          </div>
+        )}
+        {showCurrHighlight && (
+          <div>
+            {displayCurrPgHighlight}
+            <ReactPaginate
+              previousLabel={"Previous"}
+              nextLabel={"Next"}
+              pageCount={highlightCurrPageCount}
+              onPageChange={handleHighlightCurrChangePage}
+              containerClassName={"paginationBttns"}
+              previousLinkClassName={"previousBttn"}
+              nextLinkClassName={"nextBttn"}
+              disabledClassName={"paginationDisabled"}
+              activeClassName={"paginationActive"}
+            />
+          </div>
+        )}
+        {showAllComment && (
+          <div>
+            {displayAllComment}
+            <ReactPaginate
+              previousLabel={"Previous"}
+              nextLabel={"Next"}
+              pageCount={commentAllPageCount}
+              onPageChange={handleCommentAllChangePage}
+              containerClassName={"paginationBttns"}
+              previousLinkClassName={"previousBttn"}
+              nextLinkClassName={"nextBttn"}
+              disabledClassName={"paginationDisabled"}
+              activeClassName={"paginationActive"}
+            />
+          </div>
+        )}
+        {showCurrComment && (
+          <div>
+            {displayCurrComment}
+            <ReactPaginate
+              previousLabel={"Previous"}
+              nextLabel={"Next"}
+              pageCount={commentCurrPageCount}
+              onPageChange={handleCommentCurrChangePage}
+              containerClassName={"paginationBttns"}
+              previousLinkClassName={"previousBttn"}
+              nextLinkClassName={"nextBttn"}
+              disabledClassName={"paginationDisabled"}
+              activeClassName={"paginationActive"}
+            />
+          </div>
+        )}
       </div>
       <div className='left-column'>
         <div className='top-menu'>
-          <button
-            className={isHighlightEnabled ? 'btn on' : 'btn off'} onClick={handleHighlight}>
-            {isHighlightEnabled ? 'Highlights: On' : 'Highlights: Off'}
+          <button className='btn' onClick={handleShowColorPicker}>
+            Highlight
           </button>
-          <button className={isCommentEnabled ? 'btn on' : 'btn off'} onClick={handleComment}>
-            {isCommentEnabled ? 'Comment: On' : 'Comment: Off'}
+          <button className='btn' onClick={handleComment}>
+            Comment
           </button>
         </div>
+        {showColorPicker && (
+          <TwitterPicker
+            color={highlightColor.current}
+            onChangeComplete={handleHighlightColorChange}
+          />
+        )}
+        {showCommentPrompt && (
+          <div>
+            Comment Prompt here
+          </div>
+        )}
         <div className='content'>
           {showPrev && (<a className="arrow" onClick={handlePrev}>‹</a>)}
           <div id='viewer'></div>
           {showNext && (<a className="arrow" onClick={handleNext}>›</a>)}
         </div>
       </div>
-    </>
+    </div>
   )
 }
 
