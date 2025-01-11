@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import { TwitterPicker } from 'react-color';
 import ReactPaginate from 'react-paginate';
+import DisplayHighlights from './components/DisplayHighlight';
+import DisplayComments from './components/DisplayComments';
 import ePub from "epubjs";
 import "./examples.css";
 
@@ -17,6 +19,7 @@ function App() {
   const [comments, setComments] = useState([]);
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [showCommentPrompt, setShowCommentPrompt] = useState(false);
+  const [commentInput, setCommentInput] = useState(null);
 
   const [highlightAllPageNum, setHighlightAllPageNum] = useState(0);
   const [commentAllPageNum, setCommentAllPageNum] = useState(0);
@@ -162,31 +165,9 @@ function App() {
     setHighlights((prevData) => prevData.filter((data) => data.range !== cfiRange));
   };
 
-  const [menuOpen, setMenuOpen] = useState(false);
-
   const displayAllHighlight = highlights.slice(highlightAllPagesVisited, highlightAllPagesVisited + highlightAllPerPage)
     .map((data, index) => (
-      <li className='card-display' key={index}>
-        <div>{data.text}</div>
-        <div className="menu-container">
-          <div className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)}>
-            <span></span>
-            <span></span>
-            <span></span>
-          </div>
-          <ul className={menuOpen ? "open" : ""}>
-            <li onClick={() => rendition.display(data.range)}>
-              View Page {data.page}
-            </li>
-            <li>
-              Edit
-            </li>
-            <li onClick={() => handleRemoveHighlight(data.range)}>
-              Delete
-            </li>
-          </ul>
-        </div>
-      </li>
+      <DisplayHighlights data={data} index={index} rendition={rendition} handleRemoveHighlight={handleRemoveHighlight} />
     ))
 
   const highlightAllPageCount = Math.ceil(highlights.length / highlightAllPerPage);
@@ -197,27 +178,7 @@ function App() {
 
   const displayCurrPgHighlight = highlights.filter((data) => data.page == currentPage).slice(highlightCurrPagesVisited, highlightCurrPagesVisited + highlightCurrPerPage)
     .map((data, index) => (
-      <li className='card-display' key={index}>
-        <div>{data.text}</div>
-        <div className="menu-container">
-          <div className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)}>
-            <span></span>
-            <span></span>
-            <span></span>
-          </div>
-          <ul className={menuOpen ? "open" : ""}>
-            <li onClick={() => rendition.display(data.range)}>
-              View Page {data.page}
-            </li>
-            <li>
-              Edit
-            </li>
-            <li onClick={() => handleRemoveHighlight(data.range)}>
-              Delete
-            </li>
-          </ul>
-        </div>
-      </li>
+      <DisplayHighlights data={data} index={index} rendition={rendition} handleRemoveHighlight={handleRemoveHighlight} />
     ))
 
   const highlightCurrPageCount = Math.ceil(highlights.filter((data) => data.page == currentPage).length / highlightCurrPerPage);
@@ -242,27 +203,46 @@ function App() {
     rendition.on('selected', handleCommentData);
   }
 
+  const handleCommentPromptSubmit = () => {
+    setShowCommentPrompt(false);
+  }
+
+  const handleCommentPromptCancel = () => {
+    setShowCommentPrompt(false);
+  }
+
   const handleCommentData = useCallback(async (cfiRange) => {
     const comment = prompt('what would you like to comment');
-    const range = await book.getRange(cfiRange);
-    setShowCommentPrompt(true);
+    
+    if (comment) {
+      const range = await book.getRange(cfiRange);
+      //setShowCommentPrompt(true);
 
-    if (range) {
-      const text = range.toString();
-      const page = rendition.location.start.displayed.page;
+      if (range) {
+        const text = range.toString();
+        const page = rendition.location.start.displayed.page;
 
-      const data = {
-        range: cfiRange,
-        text: text,
-        comment: comment,
-        page: page
+        const data = {
+          range: cfiRange,
+          text: text,
+          comment: comment,
+          page: page
+        }
+
+        setComments((prevData) => [...prevData, data]);
       }
 
-      setComments((prevData) => [...prevData, data]);
+      rendition.off('selected', handleCommentData);
     }
-
-    rendition.off('selected', handleCommentData);
   }, [rendition, book])
+
+  const handleEditComment = (cfiRange) => {
+    setComments((prevData) => prevData.filter((data) => {
+      if (data.range == cfiRange) {
+        //do something 
+      }
+    }));
+  }
 
   const handleRemoveComment = (cfiRange) => {
     setComments((prevData) => prevData.filter((data) => data.range !== cfiRange));
@@ -270,28 +250,7 @@ function App() {
 
   const displayAllComment = comments.slice(commentAllPagesVisited, commentAllPagesVisited + commentAllPerPage)
     .map((data, index) => (
-      <li className='card-display' key={index}>
-        <div>{data.text}</div>
-        <div>{data.comment}</div>
-        <div className="menu-container">
-          <div className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)}>
-            <span></span>
-            <span></span>
-            <span></span>
-          </div>
-          <ul className={menuOpen ? "open" : ""}>
-            <li onClick={() => rendition.display(data.range)}>
-              View Page {data.page}
-            </li>
-            <li>
-              Edit
-            </li>
-            <li onClick={() => handleRemoveComment(data.range)}>
-              Delete
-            </li>
-          </ul>
-        </div>
-      </li>
+      <DisplayComments data={data} index={index} rendition={rendition} handleRemoveComment={handleRemoveComment} />
     ))
 
   const commentAllPageCount = Math.ceil(comments.length / commentAllPerPage);
@@ -302,28 +261,7 @@ function App() {
 
   const displayCurrComment = comments.filter((data) => data.page == currentPage).slice(commentCurrPagesVisited, commentCurrPagesVisited + commentCurrPerPage)
     .map((data, index) => (
-      <li className='card-display' key={index}>
-        <div>{data.text}</div>
-        <div>{data.comment}</div>
-        <div className="menu-container">
-          <div className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)}>
-            <span></span>
-            <span></span>
-            <span></span>
-          </div>
-          <ul className={menuOpen ? "open" : ""}>
-            <li onClick={() => rendition.display(data.range)}>
-              View Page {data.page}
-            </li>
-            <li>
-              Edit
-            </li>
-            <li onClick={() => handleRemoveComment(data.range)}>
-              Delete
-            </li>
-          </ul>
-        </div>
-      </li>
+      <DisplayComments data={data} index={index} rendition={rendition} handleRemoveComment={handleRemoveComment} />
     ))
 
   const commentCurrPageCount = Math.ceil(comments.filter((data) => data.page == currentPage).length / commentCurrPerPage);
@@ -438,24 +376,30 @@ function App() {
       </div>
       <div className='left-column'>
         <div className='top-menu'>
-          <button className='btn' onClick={handleShowColorPicker}>
-            Highlight
-          </button>
           <button className='btn' onClick={handleComment}>
             Comment
           </button>
-        </div>
-        {showColorPicker && (
-          <TwitterPicker
-            color={highlightColor.current}
-            onChangeComplete={handleHighlightColorChange}
-          />
-        )}
-        {showCommentPrompt && (
           <div>
-            Comment Prompt here
+            {showCommentPrompt && (
+              <div>
+                Comment Prompt here
+              </div>
+            )}
           </div>
-        )}
+          <div>
+            <button className="btn" onClick={handleShowColorPicker}>
+              Highlight
+            </button>
+            <div className={showColorPicker ? 'open' : ''}>
+              {showColorPicker && (
+                <TwitterPicker
+                  color={highlightColor.current}
+                  onChangeComplete={handleHighlightColorChange}
+                />
+              )}
+            </div>
+          </div>
+        </div>
         <div className='content'>
           {showPrev && (<a className="arrow" onClick={handlePrev}>‹</a>)}
           <div id='viewer'></div>

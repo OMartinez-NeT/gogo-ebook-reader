@@ -24,6 +24,8 @@ body {
 .top-menu {
   width: 100%;
   height: 50px;
+  justify-content: center;
+  display: flex;
 }
 
 .toc {
@@ -91,23 +93,6 @@ body {
   margin-left: -10px;
 }
 
-.btn {
-  cursor: pointer;
-  border-radius: 5px;
-  text-decoration: none;
-  padding: 10px 20px;
-}
-
-.on {
-  background-color: #4CAF50;
-  color: #fff;
-}
-
-.off {
-  background-color: #ccc;
-  color: #333;
-}
-
 .paginationBttns {
   width: 95%;
   height: 40px;
@@ -169,18 +154,19 @@ body {
   flex-direction: column;
   border-radius: 4px;
   margin: 50px 10px 0px;
-  margin-top: 5px;
-  padding: 10px;
+  margin-top: 10px;
+  padding: 20px;
   width: 530px;
+  min-height: 200px;
   box-sizing: border-box;
   display: grid;
   grid-template-areas:
     "content menu";
-  grid-template-columns: 5fr 1fr;
+  grid-template-columns: 7fr 0.5fr;
   gap: 5px;
 }
 
-.card-display > div.menu-container {
+.card-display>div.menu-container {
   grid-area: menu;
   position: relative;
 }
@@ -232,5 +218,19 @@ body {
 }
 
 .menu-container ul li:hover {
+  background-color: #f0f0f0;
+}
+
+.btn {
+  width: 100px;
+  height: 30px;
+  background-color: white;
+  border: 1px solid #ddd;
+  cursor: pointer;
+  border-radius: 5px;
+  text-decoration: none;
+}
+
+.btn:hover {
   background-color: #f0f0f0;
 }
