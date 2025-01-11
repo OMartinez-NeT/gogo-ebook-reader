@@ -142,19 +142,6 @@ body {
   background-color: white;
 }
 
-.highlight-display {
-  background-color: white;
-  border: 1px solid #ddd;
-  display: block;
-  flex-direction: column;
-  border-radius: 4px;
-  margin: 50px 10px 0px;
-  margin-top: 5px;
-  padding: 10px;
-  width: 530px;
-  box-sizing: border-box;
-}
-
 .right-column-menu-container {
   text-align: center;
 }
@@ -176,3 +163,74 @@ body {
   width: 100%;
 }
 
+.card-display {
+  background-color: white;
+  border: 1px solid #ddd;
+  flex-direction: column;
+  border-radius: 4px;
+  margin: 50px 10px 0px;
+  margin-top: 5px;
+  padding: 10px;
+  width: 530px;
+  box-sizing: border-box;
+  display: grid;
+  grid-template-areas:
+    "content menu";
+  grid-template-columns: 5fr 1fr;
+  gap: 5px;
+}
+
+.card-display > div.menu-container {
+  grid-area: menu;
+  position: relative;
+}
+
+.menu-toggle {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 2.25rem;
+  height: 2rem;
+  cursor: pointer;
+  float: right;
+}
+
+.menu-toggle span {
+  height: 0.4rem;
+  width: 100%;
+  background-color: grey;
+  border-radius: 0.2rem;
+}
+
+.menu-container ul {
+  display: none;
+  position: absolute;
+  top: 2.25rem;
+  right: 0;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  padding: 10px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 100px;
+}
+
+.menu-container ul.open {
+  display: block;
+}
+
+.menu-container ul li {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.menu-container ul li:last-child {
+  border-bottom: none;
+}
+
+.menu-container ul li:hover {
+  background-color: #f0f0f0;
+}

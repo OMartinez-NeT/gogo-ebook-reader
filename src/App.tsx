@@ -162,14 +162,30 @@ function App() {
     setHighlights((prevData) => prevData.filter((data) => data.range !== cfiRange));
   };
 
+  const [menuOpen, setMenuOpen] = useState(false);
+
   const displayAllHighlight = highlights.slice(highlightAllPagesVisited, highlightAllPagesVisited + highlightAllPerPage)
     .map((data, index) => (
-      <li className='highlight-display' key={index}>
-        <span>{data.text}</span>
-        <br />
-        <br />
-        <button className='btn' onClick={() => rendition.display(data.range)}>Go to Page {data.page}</button>
-        <button className='btn' onClick={() => handleRemoveHighlight(data.range)}>Delete</button>
+      <li className='card-display' key={index}>
+        <div>{data.text}</div>
+        <div className="menu-container">
+          <div className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)}>
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          <ul className={menuOpen ? "open" : ""}>
+            <li onClick={() => rendition.display(data.range)}>
+              View Page {data.page}
+            </li>
+            <li>
+              Edit
+            </li>
+            <li onClick={() => handleRemoveHighlight(data.range)}>
+              Delete
+            </li>
+          </ul>
+        </div>
       </li>
     ))
 
@@ -181,12 +197,26 @@ function App() {
 
   const displayCurrPgHighlight = highlights.filter((data) => data.page == currentPage).slice(highlightCurrPagesVisited, highlightCurrPagesVisited + highlightCurrPerPage)
     .map((data, index) => (
-      <li className='highlight-display' key={index}>
-        <span>{data.text}</span>
-        <br />
-        <br />
-        <button className='btn' onClick={() => rendition.display(data.range)}>Go to Page {data.page}</button>
-        <button className='btn' onClick={() => handleRemoveHighlight(data.range)}>Delete</button>
+      <li className='card-display' key={index}>
+        <div>{data.text}</div>
+        <div className="menu-container">
+          <div className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)}>
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          <ul className={menuOpen ? "open" : ""}>
+            <li onClick={() => rendition.display(data.range)}>
+              View Page {data.page}
+            </li>
+            <li>
+              Edit
+            </li>
+            <li onClick={() => handleRemoveHighlight(data.range)}>
+              Delete
+            </li>
+          </ul>
+        </div>
       </li>
     ))
 
@@ -240,18 +270,26 @@ function App() {
 
   const displayAllComment = comments.slice(commentAllPagesVisited, commentAllPagesVisited + commentAllPerPage)
     .map((data, index) => (
-      <li className='highlight-display' key={index}>
-        <div className="passage-container">
-          <span className="passage">{data.text}</span>
-        </div>
-        <br />
-        <br />
-        <div className="comment-container">
-          <span>{data.comment}</span>
-          <br />
-          <br />
-          <button className='btn' onClick={() => rendition.display(data.range)}>Go to Page {data.page}</button>
-          <button className='btn' onClick={() => handleRemoveComment(data.range)}>Delete</button>
+      <li className='card-display' key={index}>
+        <div>{data.text}</div>
+        <div>{data.comment}</div>
+        <div className="menu-container">
+          <div className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)}>
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          <ul className={menuOpen ? "open" : ""}>
+            <li onClick={() => rendition.display(data.range)}>
+              View Page {data.page}
+            </li>
+            <li>
+              Edit
+            </li>
+            <li onClick={() => handleRemoveComment(data.range)}>
+              Delete
+            </li>
+          </ul>
         </div>
       </li>
     ))
@@ -264,18 +302,26 @@ function App() {
 
   const displayCurrComment = comments.filter((data) => data.page == currentPage).slice(commentCurrPagesVisited, commentCurrPagesVisited + commentCurrPerPage)
     .map((data, index) => (
-      <li className='highlight-display' key={index}>
-        <div className="passage-container">
-          <span className="passage">{data.text}</span>
-        </div>
-        <br />
-        <br />
-        <div className="comment-container">
-          <span>{data.comment}</span>
-          <br />
-          <br />
-          <button className='btn' onClick={() => rendition.display(data.range)}>Go to Page {data.page}</button>
-          <button className='btn' onClick={() => handleRemoveComment(data.range)}>Delete</button>
+      <li className='card-display' key={index}>
+        <div>{data.text}</div>
+        <div>{data.comment}</div>
+        <div className="menu-container">
+          <div className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)}>
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          <ul className={menuOpen ? "open" : ""}>
+            <li onClick={() => rendition.display(data.range)}>
+              View Page {data.page}
+            </li>
+            <li>
+              Edit
+            </li>
+            <li onClick={() => handleRemoveComment(data.range)}>
+              Delete
+            </li>
+          </ul>
         </div>
       </li>
     ))
