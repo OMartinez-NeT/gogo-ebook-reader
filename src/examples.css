@@ -55,8 +55,7 @@ body {
 .right-column {
   float: right;
   width: 30%;
-  height: 100vh;
-  border-left: 1px black solid;
+  height: 100%;
   box-sizing: border-box;
   padding: 10px;
 }
@@ -65,7 +64,7 @@ body {
   float: left;
   background-image: linear-gradient(to right, #0cc0df, #ffde59);
   width: 70%;
-  height: 100vh;
+  height: 100%;
   box-sizing: border-box;
   padding: 10px;
 }
@@ -118,11 +117,6 @@ body {
 
 .active {
   border-bottom: 1px solid black;
-}
-
-.background {
-  height: 100%;
-  width: 100%;
 }
 
 .card-display {

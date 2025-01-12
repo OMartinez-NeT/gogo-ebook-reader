@@ -111,7 +111,7 @@ function App() {
   }
 
   return (
-    <div className="background">
+    <div>
       <div className='right-column'>
         <select className='toc' value={selectedSection} onChange={handleSectionChange}>
           {displayTOC}
