@@ -52,27 +52,6 @@ body {
   color: #000;
 }
 
-#extras {
-  margin: 40px auto;
-}
-
-#highlights {
-  list-style: none;
-  margin-left: 0;
-  padding: 0;
-}
-
-#highlights li {
-  list-style: none;
-  margin-bottom: 20px;
-  border-top: 1px solid #E2E2E2;
-  padding: 10px;
-}
-
-#highlights a {
-  display: block;
-}
-
 .right-column {
   float: right;
   width: 30%;
@@ -233,4 +212,12 @@ body {
 
 .btn:hover {
   background-color: #f0f0f0;
+}
+
+.comment-container {
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 0.2rem;
+  width: 300px;
+  height: 300px;
 }

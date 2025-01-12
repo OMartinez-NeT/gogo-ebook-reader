@@ -1,7 +1,7 @@
-import React, { useEffect, useState, useCallback, useRef } from "react";
+import { useState } from "react";
 import "../examples.css";
 
-const DisplayComments = ({ data, rendition, handleRemoveComment }) => {
+const DisplayComments = ({ data, rendition, setComments }) => {
     const [menuOpen, setMenuOpen] = useState(false);
 
     const handleViewPage = () => {
@@ -9,8 +9,16 @@ const DisplayComments = ({ data, rendition, handleRemoveComment }) => {
         setMenuOpen(false);
     }
 
-    const handleDelete = () => {
-        handleRemoveComment(data.range);
+    const handleEdit = (cfiRange) => {
+        setComments((prevData) => prevData.filter((data) => {
+            if (data.range == cfiRange) {
+                //do something 
+            }
+        }));
+    }
+
+    const handleDelete = (cfiRange) => {
+        setComments((prevData) => prevData.filter((data) => data.range !== cfiRange));
         setMenuOpen(false);
     }
 
@@ -28,10 +36,10 @@ const DisplayComments = ({ data, rendition, handleRemoveComment }) => {
                     <li onClick={handleViewPage}>
                         View Page {data.page}
                     </li>
-                    <li>
+                    <li onClick={() => handleEdit(data.range)}>
                         Edit
                     </li>
-                    <li onClick={handleDelete}>
+                    <li onClick={() => handleDelete(data.range)}>
                         Delete
                     </li>
                 </ul>
