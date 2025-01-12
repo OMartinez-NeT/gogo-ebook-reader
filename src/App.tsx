@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import { TwitterPicker } from 'react-color';
 import ReactPaginate from 'react-paginate';
-import DisplayHighlights from './components/DisplayHighlight';
-import DisplayComments from './components/DisplayComments';
+import HighlightCard from './components/HighlightCard';
+import CommentCard from './components/CommentCard';
 import ePub from "epubjs";
 import "./examples.css";
 
@@ -168,7 +168,7 @@ function App() {
   const displayAllHighlight = highlights.slice(highlightAllPagesVisited, highlightAllPagesVisited + highlightAllPerPage)
     .map((data, index) => (
       <li className='card-display' key={index}>
-        <DisplayHighlights data={data} rendition={rendition} handleRemoveHighlight={handleRemoveHighlight} />
+        <HighlightCard data={data} rendition={rendition} handleRemoveHighlight={handleRemoveHighlight} />
       </li>
     ))
 
@@ -181,7 +181,7 @@ function App() {
   const displayCurrPgHighlight = highlights.filter((data) => data.page == currentPage).slice(highlightCurrPagesVisited, highlightCurrPagesVisited + highlightCurrPerPage)
     .map((data, index) => (
       <li className='card-display' key={index}>
-        <DisplayHighlights data={data} rendition={rendition} handleRemoveHighlight={handleRemoveHighlight} />
+        <HighlightCard data={data} rendition={rendition} handleRemoveHighlight={handleRemoveHighlight} />
       </li>
     ))
 
@@ -259,7 +259,7 @@ function App() {
   const displayAllComment = comments.slice(commentAllPagesVisited, commentAllPagesVisited + commentAllPerPage)
     .map((data, index) => (
       <li className='card-display' key={index}>
-        <DisplayComments data={data} rendition={rendition} handleRemoveComment={handleRemoveComment} />
+        <CommentCard data={data} rendition={rendition} handleRemoveComment={handleRemoveComment} />
       </li>
     ))
 
@@ -272,7 +272,7 @@ function App() {
   const displayCurrComment = comments.filter((data) => data.page == currentPage).slice(commentCurrPagesVisited, commentCurrPagesVisited + commentCurrPerPage)
     .map((data, index) => (
       <li className='card-display' key={index}>
-        <DisplayComments data={data} rendition={rendition} handleRemoveComment={handleRemoveComment} />
+        <CommentCard data={data} rendition={rendition} handleRemoveComment={handleRemoveComment} />
       </li>
     ))
 
