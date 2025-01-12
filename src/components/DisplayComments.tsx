@@ -16,27 +16,26 @@ const DisplayComments = ({ data, rendition, handleRemoveComment }) => {
 
     return (
         <>
-            
-                <div>{data.text}</div>
-                <div>{data.comment}</div>
-                <div className="menu-container">
-                    <div className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)}>
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                    </div>
-                    <ul className={menuOpen ? "open" : ""}>
-                        <li onClick={handleViewPage}>
-                            View Page {data.page}
-                        </li>
-                        <li>
-                            Edit
-                        </li>
-                        <li onClick={handleDelete}>
-                            Delete
-                        </li>
-                    </ul>
+            <div>{data.text}</div>
+            <div>{data.comment}</div>
+            <div className="menu-container">
+                <div className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)}>
+                    <span></span>
+                    <span></span>
+                    <span></span>
                 </div>
+                <ul className={menuOpen ? "open" : ""}>
+                    <li onClick={handleViewPage}>
+                        View Page {data.page}
+                    </li>
+                    <li>
+                        Edit
+                    </li>
+                    <li onClick={handleDelete}>
+                        Delete
+                    </li>
+                </ul>
+            </div>
         </>
     )
 };

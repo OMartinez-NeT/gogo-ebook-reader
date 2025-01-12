@@ -142,6 +142,7 @@ function App() {
     });
 
     const range = await book.getRange(cfiRange);
+    const page = rendition.location.start.displayed.page;
 
     if (range) {
       const text = range.toString();
@@ -149,7 +150,7 @@ function App() {
       const data = {
         range: cfiRange,
         text: text,
-        page: currentPage
+        page: page
       }
 
       setHighlights((prevData) => [...prevData, data]);
@@ -204,6 +205,7 @@ function App() {
 
   const [rang, setRange] = useState('');
   const [text, setText] = useState('');
+  const [PgNum, setPgNum] = useState('');
 
   const handleComment = () => {
     rendition.on('selected', handleCommentData);
@@ -217,7 +219,7 @@ function App() {
       range: rang,
       text: text,
       comment: commentInput,
-      page: currentPage,
+      page: PgNum,
     }
 
     setComments((prevData) => [...prevData, data]);
@@ -235,6 +237,8 @@ function App() {
     if (range) {
       const text = range.toString();
       setText(text);
+      const page = rendition.location.start.displayed.page;
+      setPgNum(page);
       setRange(cfiRange);
       rendition.off('selected', handleCommentData);
     }
@@ -384,10 +388,10 @@ function App() {
       </div>
       <div className='left-column'>
         <div className='top-menu'>
+          <div>
           <button className='btn' onClick={handleComment}>
             Comment
           </button>
-          <div>
             {showCommentPrompt && (
               <div>
                 <form onSubmit={handleCommentPromptSubmit}>
