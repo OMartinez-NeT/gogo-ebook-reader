@@ -40,7 +40,7 @@ body {
   display: inline-block;
   text-align: center;
   text-decoration: none;
-  color: #ccc;
+  color: black;
   font-size: 64px;
 }
 
@@ -59,17 +59,15 @@ body {
   border-left: 1px black solid;
   box-sizing: border-box;
   padding: 10px;
-  margin-right: -10px;
 }
 
 .left-column {
   float: left;
-  background-color: white;
+  background-image: linear-gradient(to right, #0cc0df, #ffde59);
   width: 70%;
   height: 100vh;
   box-sizing: border-box;
   padding: 10px;
-  margin-left: -10px;
 }
 
 .paginationBttns {
