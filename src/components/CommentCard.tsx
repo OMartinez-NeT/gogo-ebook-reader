@@ -16,7 +16,8 @@ const DisplayComments = ({ data, rendition, setComments }) => {
         setMenuOpen(false);
     }
 
-    const handleEditSubmit = (cfiRange) => {
+    const handleEditSubmit = (e, cfiRange) => {
+        e.preventDefault();
         setComments((prevData) => prevData.map((data) => {
             if (data.range == cfiRange) {
                 return { ...data, comment: newComment };
@@ -40,16 +41,15 @@ const DisplayComments = ({ data, rendition, setComments }) => {
             <div>{data.text}</div>
             {isEditing ? (
                 <div>
-                    <form onSubmit={() => handleEditSubmit(data.range)}>
+                    <form onSubmit={(e) => handleEditSubmit(e, data.range)}>
                         <div>
-                            <input
-                                type="text"
+                            <textarea
                                 defaultValue={data.comment}
                                 onChange={(e) => setNewComment(e.target.value)}
                             />
                         </div>
                         <button className="btn" type="submit">Submit</button>
-                        <button className="btn" onClick={handleEditCancel}>Cancel</button>
+                        <button className="btn" type="button" onClick={handleEditCancel}>Cancel</button>
                     </form>
                 </div>) : (<div>
                     {data.comment}

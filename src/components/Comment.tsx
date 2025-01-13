@@ -44,7 +44,7 @@ const Comment = ({ rendition, book, setComments }) => {
     }, [rendition, book])
 
     return (
-        <div>  
+        <div>
             <button className='btn' onClick={handleComment}>
                 Comment
             </button>
@@ -59,9 +59,14 @@ const Comment = ({ rendition, book, setComments }) => {
                                 onChange={(e) => setCommentInput(e.target.value)}
                                 required
                             />
+                            {/* <textarea
+                                id="commentInput"
+                                value={commentInput}
+                                onChange={(e) => setCommentInput(e.target.value)}
+                            /> */}
                         </div>
                         <button className="btn" type="submit">Submit</button>
-                        <button className="btn" onClick={handleCommentPromptCancel}>Cancel</button>
+                        <button className="btn" type="button" onClick={handleCommentPromptCancel}>Cancel</button>
                     </form>
                 </div>
             )}
