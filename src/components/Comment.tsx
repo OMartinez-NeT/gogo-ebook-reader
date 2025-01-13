@@ -52,18 +52,11 @@ const Comment = ({ rendition, book, setComments }) => {
                 <div>
                     <form className="comment-container" onSubmit={handleCommentPromptSubmit}>
                         <div>
-                            <input
-                                type="text"
+                            <textarea
                                 id="commentInput"
                                 value={commentInput}
                                 onChange={(e) => setCommentInput(e.target.value)}
-                                required
                             />
-                            {/* <textarea
-                                id="commentInput"
-                                value={commentInput}
-                                onChange={(e) => setCommentInput(e.target.value)}
-                            /> */}
                         </div>
                         <button className="btn" type="submit">Submit</button>
                         <button className="btn" type="button" onClick={handleCommentPromptCancel}>Cancel</button>

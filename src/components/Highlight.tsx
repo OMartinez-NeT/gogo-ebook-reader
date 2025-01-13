@@ -1,10 +1,13 @@
 import { useState, useCallback, useRef } from "react";
-import { TwitterPicker } from 'react-color';
 import "../examples.css";
 
 const Highlight = ({ rendition, book, setHighlights }) => {
     const [showColorPicker, setShowColorPicker] = useState(false);
     const highlightColor = useRef('yellow');
+
+    const defaultColors = ['#ff6900', '#fcb900', '#7bdcb5', '#00d084', 
+        '#8ed1fc', '#0693e3', '#abb8c3', '#eb144c', '#f78da7', '#9900ef'];
+
 
     const handleHighlight = () => {
         rendition.on('selected', handleHighlightData);
@@ -37,7 +40,7 @@ const Highlight = ({ rendition, book, setHighlights }) => {
     }, [rendition, book]);
 
     const handleHighlightColorChange = (color) => {
-        highlightColor.current = color.hex;
+        highlightColor.current = color;
         handleHighlight();
         setShowColorPicker(false);
     }
@@ -53,10 +56,17 @@ const Highlight = ({ rendition, book, setHighlights }) => {
             </button>
             <div className={showColorPicker ? 'open' : ''}>
                 {showColorPicker && (
-                    <TwitterPicker
-                        color={highlightColor.current}
-                        onChangeComplete={handleHighlightColorChange}
-                    />
+                    <div className="color-picker-container">
+                        {defaultColors.map((defaultColors, index) => (
+                            <button
+                                key={index}
+                                style={{ backgroundColor: defaultColors}}
+                                className="color-picker-card"
+                                onClick={() => handleHighlightColorChange(defaultColors)}
+                            >
+                            </button>
+                        ))}
+                    </div>
                 )}
             </div>
         </div>
