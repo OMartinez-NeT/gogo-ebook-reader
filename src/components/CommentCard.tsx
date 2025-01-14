@@ -75,7 +75,7 @@ const DisplayComments = ({ data, rendition, setComments }) => {
                         <button className="btn" type="button" onClick={handleEditCancel}>Cancel</button>
                     </form>
                 </div>) : (
-                <div className="comment-input-container">
+                <div className="comment-container">
                     <input type="checkbox" id={`showmore-${data.range}`} />
                     <div className="note">
                         {data.comment}
@@ -85,8 +85,8 @@ const DisplayComments = ({ data, rendition, setComments }) => {
                     )}
                 </div>
             )}
-            <div className="menu-container">
-                <div className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)}>
+            <div className="card-menu-container">
+                <div className="card-menu-toggle" onClick={() => setMenuOpen(!menuOpen)}>
                     <span></span>
                     <span></span>
                     <span></span>

@@ -24,26 +24,26 @@ const AnnotationMenu = ({ rendition, highlights, comments, currentPage,
 
     return (
         <>
-            <div className='right-column-menu-container'>
+            <div className='annotation-menu-container'>
                 <button
-                    className={showAllComment ? 'right-column-menu-btn active' : 'right-column-menu-btn'}
+                    className={showAllComment ? 'annotation-menu-btn active' : 'annotation-menu-btn'}
                     onClick={() => handleAnnotations(true, false, false, false)}>
                     All Comments
                 </button>
                 <button
-                    className={showCurrComment ? 'right-column-menu-btn active' : 'right-column-menu-btn'}
+                    className={showCurrComment ? 'annotation-menu-btn active' : 'annotation-menu-btn'}
                     onClick={() => handleAnnotations(false, true, false, false)}>
-                    Current Comments
+                    Page Comments
                 </button>
                 <button
-                    className={showAllHighlight ? 'right-column-menu-btn active' : 'right-column-menu-btn'}
+                    className={showAllHighlight ? 'annotation-menu-btn active' : 'annotation-menu-btn'}
                     onClick={() => handleAnnotations(false, false, true, false)}>
                     All Highlights
                 </button>
                 <button
-                    className={showCurrHighlight ? 'right-column-menu-btn active' : 'right-column-menu-btn'}
+                    className={showCurrHighlight ? 'annotation-menu-btn active' : 'annotation-menu-btn'}
                     onClick={() => handleAnnotations(false, false, false, true)}>
-                    Current Highlights
+                    Page Highlights
                 </button>
             </div>
             {showAllHighlight && (

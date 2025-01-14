@@ -30,7 +30,7 @@ function App() {
   useEffect(() => {
     if (!book) return;
 
-    const renderedBook = book.renderTo("viewer", {
+    const renderedBook = book.renderTo("module", {
       width: "100%",
       height: 700,
       allowScriptedContent: true,
@@ -117,7 +117,7 @@ function App() {
   }
 
   return (
-    <div>
+    <div className="page-content">
       <div className='right-column'>
         <select className='toc' value={selectedSection} onChange={handleSectionChange}>
           {displayTOC}
@@ -140,21 +140,23 @@ function App() {
         />
       </div>
       <div className='left-column'>
-        <div className='top-menu'>
-          <Comment
-            rendition={rendition}
-            book={book}
-            setComments={setComments}
-          />
-          <Highlight
-            rendition={rendition}
-            book={book}
-            setHighlights={setHighlights}
-          />
-        </div>
-        <div className='content'>
+          <div className='module-menu'>
+            <Comment
+              rendition={rendition}
+              book={book}
+              setComments={setComments}
+            />
+            <Highlight
+              rendition={rendition}
+              book={book}
+              setHighlights={setHighlights}
+            />
+          </div>
+        <div className='module-container'>
           {showPrev && (<a className="arrow" onClick={handlePrev}>‹</a>)}
-          <div id='viewer'></div>
+          <div id='module'>
+            <div className="page-number">{currentPage}</div>
+          </div>
           {showNext && (<a className="arrow" onClick={handleNext}>›</a>)}
         </div>
       </div>

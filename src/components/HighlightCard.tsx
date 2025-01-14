@@ -18,8 +18,8 @@ const DisplayHighlights = ({ data, rendition, setHighlights }) => {
     return (
         <>
             <div>{data.text}</div>
-            <div className="menu-container">
-                <div className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)}>
+            <div className="card-menu-container">
+                <div className="card-menu-toggle" onClick={() => setMenuOpen(!menuOpen)}>
                     <span></span>
                     <span></span>
                     <span></span>

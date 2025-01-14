@@ -44,13 +44,13 @@ const Comment = ({ rendition, book, setComments }) => {
     }, [rendition, book])
 
     return (
-        <div>
+        <div className="comment-menu-container">
             <button className='btn' onClick={handleComment}>
                 Comment
             </button>
             {showCommentPrompt && (
                 <div>
-                    <form className="comment-container" onSubmit={handleCommentPromptSubmit}>
+                    <form className="edit-comment-form" onSubmit={handleCommentPromptSubmit}>
                         <div>
                             <textarea
                                 id="commentInput"
