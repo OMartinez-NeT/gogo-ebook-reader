@@ -1,10 +1,23 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "../examples.css";
 
 const DisplayComments = ({ data, rendition, setComments }) => {
     const [menuOpen, setMenuOpen] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
-    const [newComment, setNewComment] = useState('');
+    const [newComment, setNewComment] = useState(data.comment);
+    const [showMore, setShowMore] = useState(false);
+
+    useEffect(() => {
+        const notes = document.querySelectorAll('.note');
+
+        notes.forEach((note) => {
+            if (note.scrollHeight > note.clientHeight) {
+                setShowMore(true);
+            } else {
+                setShowMore(false);
+            }
+        });
+    }, [data.comment]);
 
     const handleViewPage = () => {
         rendition.display(data.range);
@@ -18,17 +31,22 @@ const DisplayComments = ({ data, rendition, setComments }) => {
 
     const handleEditSubmit = (e, cfiRange) => {
         e.preventDefault();
-        setComments((prevData) => prevData.map((data) => {
-            if (data.range == cfiRange) {
-                return { ...data, comment: newComment };
-            }
-            return data;
-        }));
+
+        if (newComment !== data.comment) {
+            setComments((prevData) => prevData.map((data) => {
+                if (data.range == cfiRange) {
+                    return { ...data, comment: newComment };
+                }
+                return data;
+            }));
+        }
+
         setIsEditing(false);
     }
 
     const handleEditCancel = () => {
         setIsEditing(false);
+        setNewComment(data.comment); 
     }
 
     const handleDelete = (cfiRange) => {
@@ -38,12 +56,17 @@ const DisplayComments = ({ data, rendition, setComments }) => {
 
     return (
         <>
-            <div>{data.text}</div>
+            <div className="passage-container">
+                <div className="passage">
+                    {data.text}
+                </div>
+            </div>
             {isEditing ? (
                 <div>
                     <form onSubmit={(e) => handleEditSubmit(e, data.range)}>
                         <div>
                             <textarea
+                                className="comment-input"
                                 defaultValue={data.comment}
                                 onChange={(e) => setNewComment(e.target.value)}
                             />
@@ -51,8 +74,15 @@ const DisplayComments = ({ data, rendition, setComments }) => {
                         <button className="btn" type="submit">Submit</button>
                         <button className="btn" type="button" onClick={handleEditCancel}>Cancel</button>
                     </form>
-                </div>) : (<div>
-                    {data.comment}
+                </div>) : (
+                <div className="comment-input-container">
+                    <input type="checkbox" id={`showmore-${data.range}`} />
+                    <div className="note">
+                        {data.comment}
+                    </div>
+                    {showMore && (
+                        <label htmlFor={`showmore-${data.range}`}>Show </label>
+                    )}
                 </div>
             )}
             <div className="menu-container">

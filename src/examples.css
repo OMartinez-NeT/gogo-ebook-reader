@@ -24,7 +24,7 @@ body {
 .top-menu {
   width: 100%;
   height: 50px;
-  justify-content: center;
+  justify-content: right;
   display: flex;
 }
 
@@ -124,8 +124,7 @@ body {
   border: 1px solid #ddd;
   flex-direction: column;
   border-radius: 4px;
-  margin: 50px 10px 0px;
-  margin-top: 10px;
+  margin: 10px 10px;
   padding: 20px;
   width: 530px;
   min-height: 200px;
@@ -210,8 +209,8 @@ body {
   background-color: white;
   border: 1px solid #ddd;
   border-radius: 0.2rem;
-  width: 150px;
-  height: 50px;
+  width: 250px;
+  height: 100px;
   position: absolute;
 }
 
@@ -220,12 +219,24 @@ textarea {
   height: 50px;
   resize: none;
   border: none;
+  font-size: 17px;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.comment-input {
+  width: 100%;
+  height: 50px;
+}
+
+.comment-input-container {
+  width: 100%;
+  margin: 20px 0px 0px 0px;
 }
 
 .color-picker-container {
   background-color: white;
   width: 200px;
-  height: 100px;
+  border-radius: 5px;
   position: absolute;
 }
 
@@ -236,4 +247,54 @@ textarea {
   border-radius: 5px;
   cursor: pointer;
   margin: 5px;
+}
+
+.passage-container {
+  border-left: 5px solid #ddd;
+  margin: auto;
+  margin-top: 0px;
+  padding: 10px;
+  width: 90%;
+  max-height: 75px;
+  overflow: auto;
+  scrollbar-width: thin;
+}
+
+.passage {
+  font-size: 11px;
+  color: grey;
+}
+
+input[type="checkbox"] {
+  display: none;
+}
+
+label {
+  color: blue;
+  text-decoration: underline;
+  margin-top: 5px;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 12px;
+}
+
+label:after {
+  content: "more";
+}
+
+input:checked~label:after {
+  content: "less";
+}
+
+.note {
+  max-height: 100px;
+  overflow: hidden;
+  transition: all .3s ease;
+  width: 100%;
+  height: 3.5em;
+}
+
+input:checked+.note {
+  height: auto;
+  max-height: 500px;
 }
