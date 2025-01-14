@@ -2,7 +2,10 @@ import ReactPaginate from 'react-paginate';
 import HighlightCard from './HighlightCard';
 import "../examples.css";
 
-const HighlightDisplayCurrent = ({ rendition, highlights, highlightCurrPageNum, highlightCurrPerPage, highlightCurrPagesVisited, setHighlightCurrPageNum, setHighlights }) => {
+const HighlightDisplayCurrent = ({ rendition, highlights, highlightCurrPageNum, setHighlightCurrPageNum, setHighlights }) => {
+    const highlightCurrPerPage = 4;
+    const highlightCurrPagesVisited = highlightCurrPageNum * highlightCurrPerPage;
+
     const displayCurrPgHighlight = highlights.slice(highlightCurrPagesVisited, highlightCurrPagesVisited + highlightCurrPerPage)
         .map((data, index) => (
             <li className='card-display' key={index}>

@@ -15,18 +15,6 @@ const AnnotationMenu = ({ rendition, highlights, comments, currentPage,
     const [showCurrHighlight, setShowCurrHighlight] = useState(false);
     const [showCurrComment, setShowCurrComment] = useState(false);
 
-    const highlightAllPerPage = 4;
-    const highlightAllPagesVisited = highlightAllPageNum * highlightAllPerPage;
-
-    const highlightCurrPerPage = 4;
-    const highlightCurrPagesVisited = highlightCurrPageNum * highlightCurrPerPage;
-
-    const commentAllPerPage = 4;
-    const commentAllPagesVisited = commentAllPageNum * commentAllPerPage;
-
-    const commentCurrPerPage = 4;
-    const commentCurrPagesVisited = commentCurrPageNum * commentCurrPerPage;
-
     const handleAnnotations = (allComments, currComments, allHighlights, currHighlights) => {
         setShowAllComment(allComments);
         setShowAllHighlight(allHighlights);
@@ -64,8 +52,6 @@ const AnnotationMenu = ({ rendition, highlights, comments, currentPage,
                         rendition={rendition}
                         highlights={highlights}
                         highlightAllPageNum={highlightAllPageNum}
-                        highlightAllPerPage={highlightAllPerPage}
-                        highlightAllPagesVisited={highlightAllPagesVisited}
                         setHighlightAllPageNum={setHighlightAllPageNum}
                         setHighlights={setHighlights}
                     />
@@ -77,8 +63,6 @@ const AnnotationMenu = ({ rendition, highlights, comments, currentPage,
                         rendition={rendition}
                         highlights={highlights.filter((data) => data.page == currentPage)}
                         highlightCurrPageNum={highlightCurrPageNum}
-                        highlightCurrPerPage={highlightCurrPerPage}
-                        highlightCurrPagesVisited={highlightCurrPagesVisited}
                         setHighlightCurrPageNum={setHighlightCurrPageNum}
                         setHighlights={setHighlights}
                     />
@@ -90,8 +74,6 @@ const AnnotationMenu = ({ rendition, highlights, comments, currentPage,
                         rendition={rendition}
                         comments={comments}
                         commentAllPageNum={commentAllPageNum}
-                        commentAllPerPage={commentAllPerPage}
-                        commentAllPagesVisited={commentAllPagesVisited}
                         setCommentAllPageNum={setCommentAllPageNum}
                         setComments={setComments}
                     />
@@ -103,8 +85,6 @@ const AnnotationMenu = ({ rendition, highlights, comments, currentPage,
                         rendition={rendition}
                         comments={comments.filter((data) => data.page == currentPage)}
                         commentCurrPageNum={commentCurrPageNum}
-                        commentCurrPerPage={commentCurrPerPage}
-                        commentCurrPagesVisited={commentCurrPagesVisited}
                         setCommentCurrPageNum={setCommentCurrPageNum}
                         setComments={setComments}
                     />

@@ -2,7 +2,10 @@ import ReactPaginate from 'react-paginate';
 import CommentCard from './CommentCard';
 import "../examples.css";
 
-const CommentDisplayAll = ({ rendition, comments, commentAllPageNum, commentAllPerPage, commentAllPagesVisited, setCommentAllPageNum, setComments }) => {
+const CommentDisplayAll = ({ rendition, comments, commentAllPageNum, setCommentAllPageNum, setComments }) => {
+    const commentAllPerPage = 4;
+    const commentAllPagesVisited = commentAllPageNum * commentAllPerPage;
+
     const displayAllComment = comments.slice(commentAllPagesVisited, commentAllPagesVisited + commentAllPerPage)
         .map((data, index) => (
             <li className='card-display' key={index}>

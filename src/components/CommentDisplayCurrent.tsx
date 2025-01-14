@@ -2,7 +2,10 @@ import ReactPaginate from 'react-paginate';
 import CommentCard from './CommentCard';
 import "../examples.css";
 
-const CommentDisplayCurrent = ({ rendition, comments, commentCurrPageNum, commentCurrPerPage, commentCurrPagesVisited, setCommentCurrPageNum, setComments }) => {
+const CommentDisplayCurrent = ({ rendition, comments, commentCurrPageNum, setCommentCurrPageNum, setComments }) => {
+    const commentCurrPerPage = 4;
+    const commentCurrPagesVisited = commentCurrPageNum * commentCurrPerPage;
+
     const displayCurrComment = comments.slice(commentCurrPagesVisited, commentCurrPagesVisited + commentCurrPerPage)
         .map((data, index) => (
             <li className='card-display' key={index}>
