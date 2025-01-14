@@ -63,6 +63,7 @@ const AnnotationMenu = ({ rendition, highlights, comments, currentPage,
                     <HighlightDisplayAll
                         rendition={rendition}
                         highlights={highlights}
+                        highlightAllPageNum={highlightAllPageNum}
                         highlightAllPerPage={highlightAllPerPage}
                         highlightAllPagesVisited={highlightAllPagesVisited}
                         setHighlightAllPageNum={setHighlightAllPageNum}
@@ -75,6 +76,7 @@ const AnnotationMenu = ({ rendition, highlights, comments, currentPage,
                     <HighlightDisplayCurrent
                         rendition={rendition}
                         highlights={highlights.filter((data) => data.page == currentPage)}
+                        highlightCurrPageNum={highlightCurrPageNum}
                         highlightCurrPerPage={highlightCurrPerPage}
                         highlightCurrPagesVisited={highlightCurrPagesVisited}
                         setHighlightCurrPageNum={setHighlightCurrPageNum}
@@ -87,6 +89,7 @@ const AnnotationMenu = ({ rendition, highlights, comments, currentPage,
                     <CommentDisplayAll
                         rendition={rendition}
                         comments={comments}
+                        commentAllPageNum={commentAllPageNum}
                         commentAllPerPage={commentAllPerPage}
                         commentAllPagesVisited={commentAllPagesVisited}
                         setCommentAllPageNum={setCommentAllPageNum}
@@ -99,6 +102,7 @@ const AnnotationMenu = ({ rendition, highlights, comments, currentPage,
                     <CommentDisplayCurrent
                         rendition={rendition}
                         comments={comments.filter((data) => data.page == currentPage)}
+                        commentCurrPageNum={commentCurrPageNum}
                         commentCurrPerPage={commentCurrPerPage}
                         commentCurrPagesVisited={commentCurrPagesVisited}
                         setCommentCurrPageNum={setCommentCurrPageNum}

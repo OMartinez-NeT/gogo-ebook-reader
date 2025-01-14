@@ -77,6 +77,8 @@ function App() {
     rendition.display(url);
 
     setSelectedSection(url);
+    setHighlightAllPageNum(0);
+    setCommentAllPageNum(0);
     setHighlightCurrPageNum(0);
     setCommentCurrPageNum(0);
 
@@ -89,6 +91,8 @@ function App() {
   const handlePrev = () => {
     rendition.prev();
     setCurrentPage(currentPage - 1);
+    setHighlightAllPageNum(0);
+    setCommentAllPageNum(0);
     setHighlightCurrPageNum(0);
     setCommentCurrPageNum(0);
   }
@@ -96,6 +100,8 @@ function App() {
   const handleNext = () => {
     rendition.next();
     setCurrentPage(currentPage + 1);
+    setHighlightAllPageNum(0);
+    setCommentAllPageNum(0);
     setHighlightCurrPageNum(0);
     setCommentCurrPageNum(0);
   }
