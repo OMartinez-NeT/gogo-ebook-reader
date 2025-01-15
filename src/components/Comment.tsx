@@ -39,8 +39,10 @@ const Comment = ({ rendition, book, setComments }) => {
             setText(bookRange.toString());
             setPage(rendition.location.start.displayed.page);
             setRange(cfiRange);
-            rendition.off('selected', handleCommentData);
         }
+
+        rendition.off('selected', handleCommentData);
+        setCommentInput('');
     }, [rendition, book])
 
     return (
