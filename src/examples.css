@@ -230,7 +230,6 @@ textarea {
   right: 0;
   background-color: #fff;
   border: 1px solid #ddd;
-  padding: 10px;
   list-style: none;
   margin: 0;
   padding: 0;
@@ -272,12 +271,11 @@ textarea {
 
 .comment-input {
   width: 100%;
-  height: 50px;
 }
 
 .comment-container {
   width: 100%;
-  margin: 20px 0px 0px 0px;
+  margin-top: 5px;
 }
 
 .passage-container {
